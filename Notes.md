@@ -1,9 +1,11 @@
 # Notes on PDS assignment 0
 
+Note: I didn't continue to update this file.
+
 ## python
 
 - python/main.py
-  - numpy: ~0.2s [windows + battery saver + armoury silent]
+  - numpy: ~0.2s [windows + battery saver + armoury silent] ???
   - numpy: ~0.08s [windows + armoury turbo]
 
 ## rust
