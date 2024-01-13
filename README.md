@@ -9,6 +9,7 @@
 ### Run
 
 ```bash
+cd rust/
 cargo run --release # --release for optimized build
 ```
 
