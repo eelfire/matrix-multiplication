@@ -24,4 +24,4 @@ cargo run --release # --release for optimized build
 
 Note: Current implementation uses matrix with normal types and converts to SIMD vector before performing operations. This can be improved by using SIMD types for the matrix itself. This will remove the need of converting the matrix to SIMD vector before performing operations.
 
-Note: github [link](https://github.com/eelfire/matrix-multiplication) of this assignment
+Note: my github [link](https://github.com/eelfire/matrix-multiplication) of this assignment
