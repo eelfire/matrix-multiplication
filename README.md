@@ -1,6 +1,6 @@
 # Matrix Multiplication
 
-## For the learning concepts of Parallel Systems
+## For learning concepts of Parallel Systems
 
 ### Dependencies
 
