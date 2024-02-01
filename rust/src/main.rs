@@ -139,12 +139,11 @@ fn main() {
 
     let start = Instant::now();
     // let a = matrix_multiplication(matrix.clone(), matrix.clone(), matrix);
-    // let a = matrix_multiplication_simd(matrix.clone(), matrix.clone(), matrix);
-    // let a = matrix_multiplication_simd(matrix2.clone(), matrix2.clone(), matrix2);
-
+    let a = matrix_multiplication_simd(matrix.clone(), matrix.clone(), matrix);
     // let a = matrix_multiplication_parallel(matrix.clone(), matrix.clone(), matrix);
-    let a = matrix_multiplication_parallel_simd(matrix.clone(), matrix.clone(), matrix); // best result for 2048x2048
+    // let a = matrix_multiplication_parallel_simd(matrix.clone(), matrix.clone(), matrix); // best result for 2048x2048
 
+    // let a = matrix_multiplication_simd(matrix2.clone(), matrix2.clone(), matrix2);
     // let a = matrix_multiplication_parallel_simd(matrix2.clone(), matrix2.clone(), matrix2);
     let duration = start.elapsed();
 
@@ -152,7 +151,7 @@ fn main() {
 
     // print_head_tail(a);
     println!("Execution time (main fn): {:?}", main_duration);
-    println!("Execution time (matrix multiplication): {:?}", duration);
+    // println!("Execution time (matrix multiplication): {:?}", duration);
 
-    println!("usize max:\t{}\nu64 max:\t{}", usize::MAX, u64::MAX);
+    // println!("usize max:\t{}\nu64 max:\t{}", usize::MAX, u64::MAX);
 }

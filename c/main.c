@@ -10,9 +10,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/mman.h>
+#include <sys/time.h>
 #include <sys/types.h>
 #include <sys/wait.h>
-#include <time.h>
 #include <unistd.h>
 
 #define N 2048
@@ -20,19 +20,19 @@
 
 sem_t semaphores[NUM_THREADS];
 
-float A[N][N], B[N][N], C[N][N];
-float (*fC)[N];
+u_int64_t A[N][N], B[N][N], C[N][N];
+u_int64_t (*fC)[N];
 
-void init_matrix_random(float m[N][N]) {
+void init_matrix_random(u_int64_t m[N][N]) {
     int i, j;
     for (i = 0; i < N; i++) {
         for (j = 0; j < N; j++) {
-            m[i][j] = (float)rand() / (float)RAND_MAX;
+            m[i][j] = (u_int64_t)rand() / (u_int64_t)RAND_MAX;
         }
     }
 }
 
-void init_matrix_row_col(float m[N][N]) {
+void init_matrix_row_col(u_int64_t m[N][N]) {
     int i, j;
     for (i = 0; i < N; i++) {
         for (j = 0; j < N; j++) {
@@ -41,7 +41,7 @@ void init_matrix_row_col(float m[N][N]) {
     }
 }
 
-void init_matrix_with_zero(float m[N][N]) {
+void init_matrix_with_zero(u_int64_t m[N][N]) {
     int i, j;
     for (i = 0; i < N; i++) {
         for (j = 0; j < N; j++) {
@@ -50,12 +50,21 @@ void init_matrix_with_zero(float m[N][N]) {
     }
 }
 
-void print_head_tail(float m[N][N]) {
+void init_matrix_with_ones(u_int64_t m[N][N]) {
+    int i, j;
+    for (i = 0; i < N; i++) {
+        for (j = 0; j < N; j++) {
+            m[i][j] = 1;
+        }
+    }
+}
+
+void print_head_tail(u_int64_t m[N][N]) {
     // print first and last row of matrix
     int i, j;
     for (i = 0; i < N; i = i + N - 1) {
         for (j = 0; j < N; j++) {
-            printf("%f ", m[i][j]);
+            printf("%ld ", m[i][j]);
         }
         printf("\n");
     }
@@ -150,7 +159,7 @@ void multiply_row_col(int row, int col) {
 
 void matrix_multiplication_fork() {
     // multiply matrix A and B and store in fC using fork
-    fC = mmap(NULL, N * N * sizeof(float), PROT_READ | PROT_WRITE,
+    fC = mmap(NULL, N * N * sizeof(u_int64_t), PROT_READ | PROT_WRITE,
               MAP_SHARED | MAP_ANONYMOUS, -1, 0);
 
     pid_t child_pid;
@@ -181,48 +190,48 @@ int main() {
     clock_t main_start, main_end;
     main_start = clock();
 
-    struct timeval m_start, m_end;
-    gettimeofday(&m_start, 0);
-
     srand(time(NULL));
     // init_matrix_random(A);
     // init_matrix_random(B);
-    init_matrix_row_col(A);
-    init_matrix_row_col(B);
+    // init_matrix_row_col(A);
+    // init_matrix_row_col(B);
+    init_matrix_with_ones(A);
+    init_matrix_with_ones(B);
     // init_matrix(C);
     init_matrix_with_zero(C);
 
     clock_t start, end;
-    // double cpu_time_used;
     start = clock();
+    struct timeval m_start, m_end;
+    gettimeofday(&m_start, 0);
 
     // simple
     // matrix_multiplication();
 
     // using pthread
-    // matrix_multiplication_pthread(); // isn't work for large matrix
+    // matrix_multiplication_pthread(); // isn't working for large matrix
 
     // using fork
     matrix_multiplication_fork();
-
-    end = clock();
-
-    print_head_tail(fC);
-    printf("Time taken: %f\n", ((double)(end - start)) / CLOCKS_PER_SEC);
-
-    munmap(fC, N * N * sizeof(float));
+    munmap(fC, N * N * sizeof(u_int64_t));
 
     gettimeofday(&m_end, 0);
-    double total = m_end.tv_sec - m_start.tv_sec;
-    if (m_end.tv_usec - m_start.tv_usec < 0) total++;
-    total *= 1000*1000;
-    total += m_end.tv_usec - m_start.tv_usec;
-    printf("Execution time: %f\n", total);
+    end = clock();
+
+    // print_head_tail(fC);
+    printf("Time taken: %f\n", ((double)(end - start)) / CLOCKS_PER_SEC);
 
     main_end = clock();
-    printf("Time taken (main): %f\n", ((double)(main_end - main_start)) / CLOCKS_PER_SEC);
-    printf("%ld\n", main_end);
+    printf("Time taken (main): %f\n",
+           ((double)(main_end - main_start)) / CLOCKS_PER_SEC);
 
-    printf("%ld\n", sizeof(uint));
+    double total = m_end.tv_sec - m_start.tv_sec;
+    if (m_end.tv_usec - m_start.tv_usec < 0)
+        total++;
+    total *= 1000 * 1000;
+    total += m_end.tv_usec - m_start.tv_usec;
+    total /= 1000 * 1000;
+    printf("Execution time: %f\n", total);
+
     return 0;
 }
